@@ -1,0 +1,20 @@
+# Build results
+bin/
+obj/
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio
+.vs/
+
+# ASP.NET specific
+*.dbmdl
+*.bak
+*.log
+
+# Publish output
+publish/
