@@ -4,37 +4,39 @@ namespace Todo_List.Controllers
 {
     public class TaskController : Controller
     {
-        [HttpGet("/login")]
+        [HttpGet("")]
         public IActionResult Login()
         {
             return View();
         }
-        [HttpGet("/todolist")]
+        [HttpPost("login")]
+
+        [HttpGet("todolist")]
         public IActionResult TodoList()
         {
             return View();
         }
-        [HttpGet("/calender")]
+        [HttpGet("calender")]
         public IActionResult Calender()
         {
             return View();
         }
-        [HttpGet("/add")]
+        [HttpGet("add")]
         public IActionResult Add()
         {
             return View();
         }
-        [HttpGet("/edit")]
+        [HttpGet("edit")]
         public IActionResult Edit()
         {
             return View();
         }
-        [HttpGet("/detail")]
+        [HttpGet("detail")]
         public IActionResult Detail()
         {
             return View();
         }
-        [HttpGet("/profile")]
+        [HttpGet("profile")]
         public IActionResult Profile()
         {
             return View();
