@@ -1,5 +1,7 @@
-﻿@{
+﻿@model Todo_List.Models.User
+@{
     Layout = null;
+    bool isRegister = ViewBag.IsRegister != null && (bool)ViewBag.IsRegister;
 }
 
 <!DOCTYPE html>
@@ -12,23 +14,23 @@
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 <body>
-    <div class="container">
+    <div class="container @(isRegister ? "active" : "")">
         <div class="form-box login">
             <form action="">
-                <h1>Login</h1>
+                <h1>Đăng Nhập</h1>
                 <div class="input-box">
-                    <input type="text" placeholder="Username">
+                    <input type="text" placeholder="Tên đăng nhập">
                     <i class="bx bxs-user"></i>
                 </div>
                 <div class="input-box">
-                    <input type="password" placeholder="Password">
+                    <input type="password" placeholder="Mật khẩu">
                     <i class="bx bxs-lock-alt"></i>
                 </div>
                 <div class="forgot-link">
-                    <a href="#">Forgot password?</a>
+                    <a href="#">Quên mật khẩu?</a>
                 </div>
-                <button type="submit" class="btn">Login</button>
-                <p>or login with social platforms</p>
+                <button type="submit" class="btn">Đăng Nhập</button>
+                <p>Hoặc đăng nhập bằng mạng xã hội</p>
                 <div class="social-icons">
                     <a href="#"><i class="bx bxl-google"></i></a>
                     <a href="#"><i class="bx bxl-facebook"></i></a>
@@ -39,29 +41,39 @@
         </div>
 
         <div class="form-box register">
-            <form action="">
-                <h1>Register</h1>
+            <form asp-action="Register" method="post">
+                <h1>Đăng Ký</h1>
                 <div class="input-box">
-                    <input type="text" placeholder="Username">
+                    <input asp-for="Username" type="text"
+                           value="@(ViewData.ModelState["Username"]?.Errors.Any() == true ? "" : Model?.Username)"
+                           class="@(ViewData.ModelState["Username"]?.Errors.Any() == true ? "error" : "")"
+                           placeholder="@(ViewData.ModelState["Username"]?.Errors.FirstOrDefault()?.ErrorMessage ?? "Tên đăng nhập")" />
                     <i class="bx bxs-user"></i>
                 </div>
                 <div class="input-box">
-                    <input type="text" placeholder="Email">
+                    <input asp-for="Email" type="text"
+                           value="@(ViewData.ModelState["Email"]?.Errors.Any() == true ? "" : Model?.Email)"
+                           class="@(ViewData.ModelState["Email"]?.Errors.Any() == true ? "error" : "")"
+                           placeholder="@(ViewData.ModelState["Email"]?.Errors.FirstOrDefault()?.ErrorMessage ?? "Email")" />
                     <i class="bx bxs-envelope"></i>
                 </div>
                 <div class="input-box">
-                    <input type="password" placeholder="Password">
+                    <input asp-for="Password" type="password"
+                           class="@(ViewData.ModelState["Password"]?.Errors.Any() == true ? "error" : "")"
+                           placeholder="@(ViewData.ModelState["Password"]?.Errors.FirstOrDefault()?.ErrorMessage ?? "Mật khẩu")" />
                     <i class="bx bxs-lock-alt"></i>
                 </div>
                 <div class="input-box">
-                    <input type="password" placeholder="Confirm Password">
+                    <input asp-for="ConfirmPassword" type="password"
+                           class="@(ViewData.ModelState["ConfirmPassword"]?.Errors.Any() == true ? "error" : "")"
+                           placeholder="@(ViewData.ModelState["ConfirmPassword"]?.Errors.FirstOrDefault()?.ErrorMessage ?? "Xác nhận mật khẩu")" />
                     <i class="bx bxs-lock-alt"></i>
                 </div>
                 <div class="forgot-link">
-                    <a href="#">Forgot password?</a>
+                    <a href="#">Quên mật khẩu?</a>
                 </div>
-                <button type="submit" class="btn">Register</button>
-                <p>or register with social platforms</p>
+                <button type="submit" class="btn">Đăng Ký</button>
+                <p>Hoặc đăng ký bằng mạng xã hội</p>
                 <div class="social-icons">
                     <a href="#"><i class="bx bxl-google"></i></a>
                     <a href="#"><i class="bx bxl-facebook"></i></a>
@@ -73,14 +85,14 @@
 
         <div class="toggle-box">
             <div class="toggle-panel toggle-left">
-                <h1>Hello, Welcome!</h1>
-                <p>Don't have an account?</p>
-                <button class="btn register-btn">Register</button>
+                <h1>Xin chào!</h1>
+                <p>Bạn chưa có tài khoản?</p>
+                <button class="btn register-btn">Đăng Ký</button>
             </div>
             <div class="toggle-panel toggle-right">
-                <h1>Hello, Welcome!</h1>
-                <p>Already have an account?</p>
-                <button class="btn login-btn">Login</button>
+                <h1>Xin chào!</h1>
+                <p>Bạn đã có tài khoản?</p>
+                <button class="btn login-btn">Đăng Nhập</button>
             </div>
         </div>
     </div>

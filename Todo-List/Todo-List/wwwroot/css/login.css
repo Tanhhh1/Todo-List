@@ -83,6 +83,16 @@ form {
             font-weight: 400;
         }
 
+        .input-box input.error::placeholder {
+            color: #e74c3c;
+            opacity: 1;
+        }
+
+        .input-box input.error {
+            border: 2px solid #e74c3c;
+            background-color: #ffe6e6;
+        }
+
     .input-box i {
         position: absolute;
         right: 20px;
