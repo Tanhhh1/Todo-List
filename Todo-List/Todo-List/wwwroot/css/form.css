@@ -1,0 +1,207 @@
+﻿main {
+    display: flex;
+    justify-content: center;
+    padding: 40px;
+}
+
+.task-edit-container {
+    background: #fff;
+    padding: 25px 30px;
+    border-radius: 10px;
+    width: 800px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.form-title {
+    font-size: 20px;
+    margin-bottom: 20px;
+    color: #333;
+    text-align: center;
+}
+
+.task-form .form-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.task-form label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #333;
+}
+
+.task-form input[type="text"],
+.task-form input[type="date"],
+.task-form textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    outline: none;
+    transition: border 0.2s ease, box-shadow 0.2s ease;
+    font-family: Arial, sans-serif;
+}
+
+    .task-form input:focus,
+    .task-form textarea:focus {
+        border-color: #7494ec;
+        box-shadow: 0 0 0 2px rgba(116, 148, 236, 0.2);
+    }
+
+.radio-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 5px;
+}
+
+    .radio-group label {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-weight: normal;
+        color: #444;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .radio-group input {
+        margin-right: 5px;
+    }
+
+.form-btn {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.btn-submit {
+    padding: 10px 20px;
+    background: #7494ec;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+    .btn-submit:hover {
+        background: #0056b3;
+    }
+
+.btn-cancle {
+    padding: 10px 20px;
+    background: #ddd;
+    color: #333;
+    border-radius: 6px;
+    font-size: 15px;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.3s ease;
+}
+
+    .btn-cancle:hover {
+        background: #bbb;
+    }
+/*-------------------------------------------------------------------------*/
+
+.task-detail-container {
+    width: 800px;
+    margin: 30px auto;
+    padding: 25px;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+}
+
+.detail-title {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+    text-align: center;
+}
+
+.detail-group {
+    margin-bottom: 15px;
+}
+
+    .detail-group label {
+        display: block;
+        font-weight: bold;
+        color: #555;
+        margin-bottom: 10px;
+    }
+
+.detail-text {
+    margin: 0;
+    padding: 10px;
+    background: #f9f9f9;
+    border-radius: 6px;
+    color: #333;
+    font-size: 15px;
+}
+
+.status-badge {
+    padding: 4px 10px;
+    font-weight: bold;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    width: fit-content;
+}
+
+    .status-badge.done {
+        color: #28a745;
+        background-color: #d4edda;
+    }
+
+    .status-badge.progress {
+        color: #e7b22b;
+        background-color: #fff8dc;
+    }
+
+    .status-badge.pending {
+        color: #dc3545;
+        background-color: #f8d7da;
+    }
+
+.detail-btns {
+    margin-top: 25px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+}
+
+    .detail-btns .btn-edit {
+        padding: 10px 20px;
+        background: #7494ec;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 15px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        text-decoration: none;
+    }
+
+        .detail-btns .btn-edit:hover {
+            background: #0056b3;
+        }
+
+    .detail-btns .btn-back {
+        padding: 10px 20px;
+        background: #ddd;
+        color: #333;
+        border-radius: 6px;
+        font-size: 15px;
+        text-decoration: none;
+        display: inline-block;
+        transition: background 0.3s ease;
+    }
+
+        .detail-btns .btn-back:hover {
+            background: #bbb;
+        }

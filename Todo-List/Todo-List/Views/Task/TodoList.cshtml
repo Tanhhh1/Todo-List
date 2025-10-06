@@ -1,0 +1,96 @@
+﻿@section Styles {
+    <link rel="stylesheet" href="~/css/todolist.css" />
+}
+<main>
+    <div class="task-container">
+        <!-- Header of Task List -->
+        <div class="task-header">
+            <div class="task-add">
+                <h2>Task List</h2>
+                <a href="#" class="btn">+ New Task</a>
+            </div>
+            <div class="task-search">
+                <div class="task-search-input">
+                    <i class='bx bx-search'></i>
+                    <input type="text" placeholder="Search task...">
+                </div>
+                <div class="task-search-buttons">
+                    <button class="btn"><i class='bx bx-calendar'></i> Calender</button>
+                    <button class="btn"><i class='bx bx-sort-up'></i> Sort By Date</button>
+                    <div class="sort-status-wrapper">
+                        <button class="btn dropdown-toggle">
+                            <i class='bx bx-task'></i> Sort By Status
+                        </button>
+                        <div class="dropdown-status">
+                            <button data-status="in-progress">In Progress</button>
+                            <button data-status="done">Done</button>
+                            <button data-status="not-done">Not Done</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Task List -->
+        <div class="task-list">
+            <div class="task-box">
+                <div class="task-box-title">
+                    <span>#1: Design UI</span>
+                    <i class='bx bx-dots-vertical-rounded dropdown-toggle'></i>
+                    <div class="dropdown">
+                        <a href="#" class="">Edit</a>
+                        <a href="#" class="">Detail</a>
+                        <a href="#" class="">Delete</a>
+                    </div>
+                </div>
+                <div class="task-info">
+                    <div class="task-status progress">In Progress</div>
+                    <div class="task-date">2025-10-05</div>
+                </div>
+                <div class="task-desc">
+                    Create the initial wireframe and mockup for the homepage......
+                </div>
+            </div>
+            <div class="task-box">
+                <div class="task-box-title">
+                    <span>#2: Design UI</span>
+                    <i class='bx bx-dots-vertical-rounded dropdown-toggle'></i>
+                    <div class="dropdown">
+                        <a href="#" class="">Edit</a>
+                        <a href="#" class="">Detail</a>
+                        <a href="#" class="">Delete</a>
+                    </div>
+                </div>
+                <div class="task-info">
+                    <div class="task-status done">Done</div>
+                    <div class="task-date">2025-10-05</div>
+                </div>
+                <div class="task-desc">
+                    Create the initial wireframe and mockup for the homepage......
+                </div>
+            </div>
+            <div class="task-box">
+                <div class="task-box-title">
+                    <span>#3: Design UI</span>
+                    <i class='bx bx-dots-vertical-rounded dropdown-toggle'></i>
+                    <div class="dropdown">
+                        <a href="#" class="">Edit</a>
+                        <a href="#" class="">Detail</a>
+                        <a href="#" class="">Delete</a>
+                    </div>
+                </div>
+                <div class="task-info">
+                    <div class="task-status pending">Pending</div>
+                    <div class="task-date">2025-10-05</div>
+                </div>
+                <div class="task-desc">
+                    Create the initial wireframe and mockup for the homepage......
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+@section Scripts {
+    <script src="~/js/todolist.js"></script>
+}
