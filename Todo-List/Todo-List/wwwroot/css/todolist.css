@@ -53,31 +53,36 @@
     gap: 10px;
 }
 
-.task-search-input {
-    display: flex;
-    align-items: center;
-    background: #f5f5f5;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 6px 10px;
-    width: 350px;
-    transition: all 0.3s ease;
+    .task-search form {
+        display: flex;
+        gap: 10px;
+    }
+
+    .task-search-input {
+        display: flex;
+        align-items: center;
+        background: #f5f5f5;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 6px 10px;
+        width: 350px;
+        transition: all 0.3s ease;
+    }
+
+.task-search-input i {
+    font-size: 18px;
+    color: #666;
+    margin-right: 8px;
 }
 
-    .task-search-input i {
-        font-size: 18px;
-        color: #666;
-        margin-right: 8px;
-    }
-
-    .task-search-input input {
-        border: none;
-        outline: none;
-        background: transparent;
-        flex: 1;
-        font-size: 14px;
-        color: #333;
-    }
+.task-search-input input {
+    border: none;
+    outline: none;
+    background: transparent;
+    flex: 1;
+    font-size: 14px;
+    color: #333;
+}
 
 .task-search .task-search-buttons {
     gap: 10px;
@@ -117,7 +122,7 @@
     min-width: 150px;
 }
 
-    .dropdown-status button {
+    .dropdown-status a {
         padding: 10px 12px;
         border: none;
         background: transparent;
@@ -129,7 +134,7 @@
         border-bottom: 1px solid #eee;
     }
 
-        .dropdown-status button:hover {
+        .dropdown-status a:hover {
             background: #f1f1f1;
         }
 

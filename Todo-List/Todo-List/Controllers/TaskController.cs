@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Todo_List.Models;
+using Todo_List.Filters;
 
 namespace Todo_List.Controllers
 {
@@ -11,63 +12,164 @@ namespace Todo_List.Controllers
         [HttpGet("login")]
         public IActionResult Login()
         {
-            ViewBag.IsRegister = false;
             return View();
         }
-        [HttpPost("register")]
-        public IActionResult Register(User user)
+
+        [HttpPost("login")]
+        public IActionResult Login(LoginModel user)
         {
-            if (!ModelState.IsValid)
+            // Tìm người dùng trong database theo Username
+            var existingUser = db.Users.FirstOrDefault(u => u.Username == user.Username); 
+            if (existingUser == null) // Nếu không tồn tại username
             {
-                ViewBag.IsRegister = true;
-                return View("Login", user);
+                ModelState.AddModelError("Username", "Tài khoản không tồn tại.");
+                return View(user);
             }
-            if (db.Users.Any(u => u.Username == user.Username))
+            // Kiểm tra mật khẩu bằng cách so sánh mật khẩu người dùng nhập với mật khẩu mã hóa trong DB
+            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(user.Password, existingUser.Password);  
+            if (!isPasswordValid) // Nếu mật khẩu sai
+            {
+                ModelState.AddModelError("Password", "Mật khẩu không chính xác.");
+                return View(user);
+            }
+            // Nếu đăng nhập thành công => Lưu thông tin vào session
+            HttpContext.Session.SetInt32("UserId", existingUser.Id);
+            HttpContext.Session.SetString("Username", existingUser.Username);
+            HttpContext.Session.SetString("Email", existingUser.Email);
+
+            return RedirectToAction("TodoList", "Task");
+        }
+
+        [HttpGet]
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear(); // Xóa toàn bộ dữ liệu trong session
+            return RedirectToAction("Login", "Task");
+        }
+
+        [HttpGet("register")]
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost("register")]
+        public IActionResult Register(RegisterModel user)
+        {
+            if (!ModelState.IsValid) // Kiểm tra hợp lệ dữ liệu (như [Required], [Email], [MinLength], ...)
+            {
+                return View(user);
+            }
+            if (db.Users.Any(u => u.Username == user.Username)) // Kiểm tra trùng username
             {
                 ModelState.AddModelError("Username", "Tên đăng nhập đã tồn tại.");
-                ViewBag.IsRegister = true;
-                return View("Login", user);
+                return View(user);
             }
-            if (db.Users.Any(u => u.Email == user.Email))
+            if (db.Users.Any(u => u.Email == user.Email)) // Kiểm tra trùng email
             {
                 ModelState.AddModelError("Email", "Email đã được sử dụng.");
-                ViewBag.IsRegister = true;
-                return View("Login", user);
+                return View(user);
             }
-            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
-            user.CreatedAt = DateTime.Now;
-            user.ConfirmPassword = null;
-
-            db.Users.Add(user);
+            var newUser = new User // Tạo đối tượng người dùng mới
+            {
+                Username = user.Username,
+                Email = user.Email,
+                Password = BCrypt.Net.BCrypt.HashPassword(user.Password),
+                CreatedAt = DateTime.Now
+            };
+            // Lưu người dùng mới vào database
+            db.Users.Add(newUser);
             db.SaveChanges();
 
             return RedirectToAction("Login", "Task");
         }
+
+        [AuthenticationFilter]
         [HttpGet("todolist")]
         public IActionResult TodoList()
         {
-            return View();
+            // Lấy ID người dùng hiện tại từ session
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Task");
+            }
+            // Lấy danh sách task của user từ DB
+            var tasks = db.Tasks
+                .Where(t => t.UserId == userId)
+                .OrderByDescending(t => t.CreatedAt)
+                .ToList();
+
+            return View(tasks);
         }
+
+        [AuthenticationFilter]
+        [HttpGet("search")]
+        public IActionResult Search(string query, string status, string sort)
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Task");
+            }
+            // Lấy tất cả task của user
+            var tasks = db.Tasks.Where(t => t.UserId == userId);
+            // Lọc theo từ khóa
+            if (!string.IsNullOrEmpty(query))
+            {
+                tasks = tasks.Where(t => t.Title.Contains(query));
+            }
+            // Lọc theo trạng thái
+            if (!string.IsNullOrEmpty(status))
+            {
+                status = status.Trim().ToLower();
+                switch (status)
+                {
+                    case "in-progress":
+                        tasks = tasks.Where(t => t.Status.ToLower() == "in progress");
+                        break;
+                    case "done":
+                        tasks = tasks.Where(t => t.Status.ToLower() == "done");
+                        break;
+                    case "pending":
+                        tasks = tasks.Where(t => t.Status.ToLower() == "pending");
+                        break;
+                }
+            }
+
+            var result = tasks.ToList();
+            return View("TodoList", result); // Trả về view TodoList với danh sách task đã lọc
+        }
+
+        [AuthenticationFilter]
         [HttpGet("calender")]
         public IActionResult Calender()
         {
             return View();
         }
+
+        [AuthenticationFilter]
         [HttpGet("add")]
         public IActionResult Add()
         {
             return View();
         }
+
+        [AuthenticationFilter]
         [HttpGet("edit")]
         public IActionResult Edit()
         {
             return View();
         }
+
+        [AuthenticationFilter]
         [HttpGet("detail")]
         public IActionResult Detail()
         {
             return View();
         }
+
+        [AuthenticationFilter]
         [HttpGet("profile")]
         public IActionResult Profile()
         {

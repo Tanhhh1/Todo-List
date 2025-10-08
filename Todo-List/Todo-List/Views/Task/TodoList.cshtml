@@ -1,96 +1,82 @@
-﻿@section Styles {
-    <link rel="stylesheet" href="~/css/todolist.css" />
+﻿@model IEnumerable<Todo_List.Models.Task> //IEnumerable<Task> là một danh sách các Task mà bạn có thể duyệt qua bằng foreach.
+
+@section Styles {
+        <link rel="stylesheet" href="~/css/todolist.css" />
 }
-<main>
-    <div class="task-container">
-        <!-- Header of Task List -->
-        <div class="task-header">
-            <div class="task-add">
-                <h2>Danh sách công việc</h2>
-                <a href="#" class="btn">+ Thêm công việc</a>
-            </div>
-            <div class="task-search">
-                <div class="task-search-input">
-                    <i class='bx bx-search'></i>
-                    <input type="text" placeholder="Tìm kiếm công việc...">
+    <main>
+        <div class="task-container">
+            <!-- Header of Task List -->
+            <div class="task-header">
+                <div class="task-add">
+                    <h2>Danh sách công việc</h2>
+                    <a asp-controller="Task" asp-action="Add" class="btn">+ Thêm công việc</a>
                 </div>
-                <div class="task-search-buttons">
-                    <button class="btn"><i class='bx bx-calendar'></i> Lịch</button>
-                    <button class="btn"><i class='bx bx-sort-up'></i> Sắp xếp theo ngày</button>
-                    <div class="sort-status-wrapper">
-                        <button class="btn dropdown-toggle">
-                            <i class='bx bx-task'></i> Sắp xếp theo trạng thái
-                        </button>
-                        <div class="dropdown-status">
-                            <button data-status="in-progress">Đang thực hiện</button>
-                            <button data-status="done">Hoàn thành</button>
-                            <button data-status="not-done">Chưa thực hiện</button>
+                <div class="task-search">
+                    <form asp-controller="Task" asp-action="Search" method="get">
+                        <div class="task-search-input">
+                            <i class='bx bx-search'></i>
+                            <input type="text" name="query" placeholder="Tìm kiếm công việc..." />
+                        </div>
+                        <button type="submit" class="btn">Tìm</button>
+                    </form>
+                    <div class="task-search-buttons">
+                        <a asp-controller="Task" asp-action="Calender" class="btn"><i class='bx bx-calendar'></i> Lịch</a>
+                        <div class="sort-status-wrapper">
+                            <button class="btn dropdown-toggle">
+                                <i class='bx bx-task'></i> Sắp xếp theo trạng thái
+                            </button>
+                            <div class="dropdown-status">
+                                <a asp-controller="Task" asp-action="Search" asp-route-status="in-progress">Đang thực hiện</a>
+                                <a asp-controller="Task" asp-action="Search" asp-route-status="done">Hoàn thành</a>
+                                <a asp-controller="Task" asp-action="Search" asp-route-status="pending">Chưa thực hiện</a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Task List -->
-        <div class="task-list">
-            <div class="task-box">
-                <div class="task-box-title">
-                    <span>#1: Thiết kế giao diện</span>
-                    <i class='bx bx-dots-vertical-rounded dropdown-toggle'></i>
-                    <div class="dropdown">
-                        <a href="#" class="">Chỉnh sửa</a>
-                        <a href="#" class="">Chi tiết</a>
-                        <a href="#" class="">Xóa</a>
-                    </div>
-                </div>
-                <div class="task-info">
-                    <div class="task-status progress">Đang thực hiện</div>
-                    <div class="task-date">2025-10-05</div>
-                </div>
-                <div class="task-desc">
-                    Tạo wireframe và mockup ban đầu cho trang chủ......
-                </div>
-            </div>
-            <div class="task-box">
-                <div class="task-box-title">
-                    <span>#2: Thiết kế giao diện</span>
-                    <i class='bx bx-dots-vertical-rounded dropdown-toggle'></i>
-                    <div class="dropdown">
-                        <a href="#" class="">Chỉnh sửa</a>
-                        <a href="#" class="">Chi tiết</a>
-                        <a href="#" class="">Xóa</a>
-                    </div>
-                </div>
-                <div class="task-info">
-                    <div class="task-status done">Hoàn thành</div>
-                    <div class="task-date">2025-10-05</div>
-                </div>
-                <div class="task-desc">
-                    Tạo wireframe và mockup ban đầu cho trang chủ......
-                </div>
-            </div>
-            <div class="task-box">
-                <div class="task-box-title">
-                    <span>#3: Thiết kế giao diện</span>
-                    <i class='bx bx-dots-vertical-rounded dropdown-toggle'></i>
-                    <div class="dropdown">
-                        <a href="#" class="">Chỉnh sửa</a>
-                        <a href="#" class="">Chi tiết</a>
-                        <a href="#" class="">Xóa</a>
-                    </div>
-                </div>
-                <div class="task-info">
-                    <div class="task-status pending">Chưa thực hiện</div>
-                    <div class="task-date">2025-10-05</div>
-                </div>
-                <div class="task-desc">
-                    Tạo wireframe và mockup ban đầu cho trang chủ......
-                </div>
+            <!-- Task List -->
+            <div class="task-list">
+                @if (!Model.Any())
+                {
+                    <p class="no-task">Bạn chưa có công việc nào.</p>
+                }
+                else
+                {
+                    @foreach (var task in Model)
+                    {
+                        var (statusClass, statusValue) = task.Status?.Trim().ToLower() switch
+                        {
+                            "in progress" => ("progress", "Đang thực hiện"),
+                            "done" => ("done", "Hoàn thành"),
+                            "pending" => ("pending", "Chưa thực hiện"),
+                            _ => (" ", "Không xác định")
+                        };
+
+                        <div class="task-box">
+                            <div class="task-box-title">
+                                <span>#@task.Id: @task.Title</span>
+                                <i class='bx bx-dots-vertical-rounded dropdown-toggle'></i>
+                                <div class="dropdown">
+                                    <a asp-action="Edit" asp-route-id="@task.Id">Chỉnh sửa</a>
+                                    <a asp-action="Detail" asp-route-id="@task.Id">Chi tiết</a>
+                                    <a asp-action="Delete" asp-route-id="@task.Id" onclick="return confirm('Bạn có chắc muốn xóa công việc này không?');">Xóa</a>
+                                </div>
+                            </div>
+                            <div class="task-info">
+                                <div class="task-status @statusClass">@statusValue</div>
+                                <div class="task-date">@task.DueDate?.ToString("yyyy-MM-dd")</div>
+                            </div>
+                            <div class="task-desc">
+                                @(task.Description?.Length > 36 ? task.Description.Substring(0, 36) + "..." : task.Description)
+                            </div>
+                        </div>
+                    }
+                }
             </div>
         </div>
-    </div>
-</main>
+    </main>
 
 @section Scripts {
-    <script src="~/js/todolist.js"></script>
+        <script src="~/js/todolist.js"></script>
 }
