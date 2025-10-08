@@ -1,36 +1,53 @@
-﻿@section Styles {
+﻿@model Todo_List.Models.Task
+
+@section Styles {
     <link rel="stylesheet" href="~/css/form.css" />
 }
+
 <main>
     <div class="task-detail-container">
         <h2 class="detail-title">Chi Tiết Công Việc</h2>
 
         <div class="detail-group">
             <label>Tiêu đề:</label>
-            <p class="detail-text">Học ASP.NET Core MVC</p>
+            <p class="detail-text">@Model.Title</p>
         </div>
 
         <div class="detail-group">
             <label>Mô tả:</label>
             <p class="detail-text">
-                Hoàn thành bài tập thực hành CRUD trong ASP.NET Core MVC.
+                @Model.Description
             </p>
         </div>
 
         <div class="detail-group">
             <label>Ngày đến hạn:</label>
-            <p class="detail-text">2025-10-10</p>
+            <p class="detail-text">@Model.DueDate?.ToString("yyyy-MM-dd")</p>
         </div>
 
         <div class="detail-group">
             <label>Trạng thái:</label>
-            <span class="status-badge done">Hoàn thành</span>
+            @{
+                var statusClass = Model.Status?.Trim().ToLower() switch
+                {
+                    "in progress" => "progress",
+                    "done" => "done",
+                    "pending" => "pending",
+                };
+            }
+            <span class="status-badge @statusClass">
+                @(Model.Status?.ToLower() switch
+                {
+                    "in progress" => "Đang thực hiện",
+                    "done" => "Hoàn thành",
+                    "pending" => "Chưa thực hiện",
+                })
+            </span>
         </div>
 
         <div class="detail-btns">
-            <a href="#" class="btn-edit">Chỉnh sửa</a>
-            <a href="#" class="btn-back">Quay lại</a>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-edit">Chỉnh sửa</a>
+            <a asp-action="TodoList" class="btn-back">Quay lại</a>
         </div>
     </div>
-
 </main>

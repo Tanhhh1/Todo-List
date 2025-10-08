@@ -37,14 +37,14 @@ namespace Todo_List.Controllers
             HttpContext.Session.SetString("Username", existingUser.Username);
             HttpContext.Session.SetString("Email", existingUser.Email);
 
-            return RedirectToAction("TodoList", "Task");
+            return RedirectToAction("TodoList");
         }
 
         [HttpGet]
         public IActionResult Logout()
         {
             HttpContext.Session.Clear(); // Xóa toàn bộ dữ liệu trong session
-            return RedirectToAction("Login", "Task");
+            return RedirectToAction("Login");
         }
 
         [HttpGet("register")]
@@ -81,7 +81,7 @@ namespace Todo_List.Controllers
             db.Users.Add(newUser);
             db.SaveChanges();
 
-            return RedirectToAction("Login", "Task");
+            return RedirectToAction("Login");
         }
 
         [AuthenticationFilter]
@@ -92,12 +92,12 @@ namespace Todo_List.Controllers
             int? userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
             {
-                return RedirectToAction("Login", "Task");
+                return RedirectToAction("Login");
             }
             // Lấy danh sách task của user từ DB
             var tasks = db.Tasks
                 .Where(t => t.UserId == userId)
-                .OrderByDescending(t => t.CreatedAt)
+                .OrderByDescending(t => t.Id)
                 .ToList();
 
             return View(tasks);
@@ -110,7 +110,7 @@ namespace Todo_List.Controllers
             int? userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
             {
-                return RedirectToAction("Login", "Task");
+                return RedirectToAction("Login");
             }
             // Lấy tất cả task của user
             var tasks = db.Tasks.Where(t => t.UserId == userId);
@@ -156,17 +156,116 @@ namespace Todo_List.Controllers
         }
 
         [AuthenticationFilter]
-        [HttpGet("edit")]
-        public IActionResult Edit()
+        [HttpPost("add")]
+        public IActionResult Add(Todo_List.Models.Task task)
         {
-            return View();
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            task.UserId = userId.Value;
+
+            if (!ModelState.IsValid)
+            {
+                return View(task);
+            }
+
+            task.Status = "Pending";
+            task.CreatedAt = DateTime.Now;
+            task.UpdatedAt = DateTime.Now;
+
+            db.Tasks.Add(task);
+            db.SaveChanges();
+
+            return RedirectToAction("TodoList");
+        }
+
+
+        [AuthenticationFilter]
+        [HttpGet("edit/{id}")]
+        public IActionResult Edit(int id)
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToAction("Login");
+            }
+            var task = db.Tasks.FirstOrDefault(t => t.Id == id && t.UserId == userId.Value);
+            if (task == null)
+            {
+                return NotFound("Công việc không tồn tại hoặc bạn không có quyền xem.");
+            }
+
+            return View(task);
         }
 
         [AuthenticationFilter]
-        [HttpGet("detail")]
-        public IActionResult Detail()
+        [HttpPost("edit/{id}")]
+        public IActionResult Edit(int id, Todo_List.Models.Task updatedTask)
         {
-            return View();
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToAction("Login");
+            }
+            var task = db.Tasks.FirstOrDefault(t => t.Id == id && t.UserId == userId.Value);
+            if (task == null)
+            {
+                return NotFound("Công việc không tồn tại hoặc bạn không có quyền xem.");
+            }
+            if (!ModelState.IsValid)
+            {
+                return View(updatedTask);
+            }
+
+            task.Title = updatedTask.Title;
+            task.Description = updatedTask.Description;
+            task.DueDate = updatedTask.DueDate;
+            task.Status = updatedTask.Status;
+            task.UpdatedAt = DateTime.Now;
+
+            db.SaveChanges();
+            return RedirectToAction("TodoList");
+        }
+
+        [AuthenticationFilter]
+        [HttpGet("detail/{id}")]
+        public IActionResult Detail(int id)
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToAction("Login");
+            }
+            // Lấy task theo id và thuộc về user hiện tại
+            var task = db.Tasks.FirstOrDefault(t => t.Id == id && t.UserId == userId.Value);
+            if (task == null)
+            {
+                return NotFound("Công việc không tồn tại hoặc bạn không có quyền xem.");
+            }
+            return View(task); 
+        }
+
+        [AuthenticationFilter]
+        [HttpGet("delete/{id}")]
+        public IActionResult Delete(int id)
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToAction("Login");
+            }
+            var task = db.Tasks.FirstOrDefault(t => t.Id == id && t.UserId == userId.Value);
+            if (task == null)
+            {
+                return NotFound("Công việc không tồn tại hoặc bạn không có quyền xóa.");
+            }
+            db.Tasks.Remove(task);
+            db.SaveChanges();
+
+            return RedirectToAction("TodoList");
         }
 
         [AuthenticationFilter]

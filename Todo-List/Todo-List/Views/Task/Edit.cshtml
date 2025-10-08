@@ -1,43 +1,50 @@
-﻿@section Styles {
+﻿@model Todo_List.Models.Task
+
+@section Styles {
     <link rel="stylesheet" href="~/css/form.css" />
 }
+
 <main>
     <div class="task-edit-container">
-        <h2 class="form-title">Cập Nhật Công Việc #</h2>
-        <form class="task-form">
-
-            <!-- Tiêu đề -->
+        <h2 class="form-title">Cập Nhật Công Việc #@Model.Id</h2>
+        <form asp-action="Edit" asp-route-id="@Model.Id" method="post" class="task-form">
             <div class="form-group">
-                <label for="taskTitle">Tiêu đề:</label>
-                <input type="text" id="taskTitle" name="taskTitle" placeholder="Nhập tiêu đề" required>
+                <label asp-for="Title"></label>
+                <input asp-for="Title" placeholder="Nhập tiêu đề" class="form-input" />
+                <span class="text-danger" asp-validation-for="Title"></span>
             </div>
 
-            <!-- Mô tả -->
             <div class="form-group">
-                <label for="taskDesc">Mô tả:</label>
-                <textarea id="taskDesc" name="taskDesc" rows="8" placeholder="Nhập mô tả..."></textarea>
+                <label asp-for="Description"></label>
+                <textarea asp-for="Description" rows="8" placeholder="Nhập mô tả..." class="form-input"></textarea>
+                <span class="text-danger" asp-validation-for="Description"></span>
             </div>
 
-            <!-- Ngày đến hạn -->
             <div class="form-group">
-                <label for="taskDate">Ngày đến hạn:</label>
-                <input type="date" id="taskDate" name="taskDate" required>
+                <label asp-for="DueDate"></label>
+                <input asp-for="DueDate" type="date" class="form-input" />
+                <span class="text-danger" asp-validation-for="DueDate"></span>
             </div>
 
-            <!-- Checkbox -->
             <div class="form-group">
                 <label>Status:</label>
                 <div class="radio-group">
-                    <label><input type="radio" name="status" value="done"> Hoàn thành</label>
-                    <label><input type="radio" name="status" value="progress"> Đang thực hiện</label>
-                    <label><input type="radio" name="status" value="pending"> Chưa bắt đầu</label>
+                    <label>
+                        <input asp-for="Status" type="radio" value="Done" /> Hoàn thành
+                    </label>
+                    <label>
+                        <input asp-for="Status" type="radio" value="In Progress" /> Đang thực hiện
+                    </label>
+                    <label>
+                        <input asp-for="Status" type="radio" value="Pending" /> Chưa bắt đầu
+                    </label>
                 </div>
+                <span class="text-danger" asp-validation-for="Status"></span>
             </div>
 
-            <!-- Submit -->
             <div class="form-btn">
                 <button type="submit" class="btn-submit">Lưu</button>
-                <a href="#" class="btn-cancle">Hủy</a>
+                <a asp-action="TodoList" class="btn-cancle">Hủy</a>
             </div>
         </form>
     </div>

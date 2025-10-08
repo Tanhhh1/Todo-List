@@ -4,7 +4,6 @@
     padding: 0px 20px;
 }
 
-/* header task */
 .task-container {
     margin-top: 20px;
 }
@@ -138,7 +137,6 @@
             background: #f1f1f1;
         }
 
-/* task list grid */
 .task-list {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -175,7 +173,6 @@
         cursor: pointer;
     }
 
-/* dropdown menu */
 .dropdown {
     position: absolute;
     top: 35px;

@@ -105,6 +105,13 @@
     .btn-cancle:hover {
         background: #bbb;
     }
+
+.text-danger {
+    display: block;
+    margin-top: 12px;
+    font-size: 13px;
+    color: #e74c3c;
+}
 /*-------------------------------------------------------------------------*/
 
 .task-detail-container {
