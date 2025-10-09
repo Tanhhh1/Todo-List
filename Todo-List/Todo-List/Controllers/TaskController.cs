@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Todo_List.Models;
 using Todo_List.Filters;
+using Todo_List.Models;
+using X.PagedList.Extensions;
 
 namespace Todo_List.Controllers
 {
@@ -83,27 +84,29 @@ namespace Todo_List.Controllers
 
         [AuthenticationFilter]
         [HttpGet("todolist")]
-        public IActionResult TodoList()
+        public IActionResult TodoList(int pageNumber = 1, int pageSize = 8)
         {
             // Lấy ID người dùng hiện tại từ session
             int? userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null) return RedirectToAction("Login");
-            // Lấy danh sách task của user từ DB
+
+            // Lấy danh sách task của user và phân trang
             var tasks = db.Tasks
                 .Where(t => t.UserId == userId)
                 .OrderByDescending(t => t.Id)
-                .ToList();
+                .ToPagedList(pageNumber, pageSize);
 
             return View(tasks);
         }
 
+
         [AuthenticationFilter]
         [HttpGet("search")]
-        public IActionResult Search(string query, string status, string sort)
+        public IActionResult Search(string query, string status, string sort, int pageNumber = 1, int pageSize = 8)
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null) return RedirectToAction("Login");
-            // Lấy tất cả task của user
+            // Lấy danh sách task ban đầu
             var tasks = db.Tasks.Where(t => t.UserId == userId);
             // Lọc theo từ khóa
             if (!string.IsNullOrEmpty(query))
@@ -128,21 +131,31 @@ namespace Todo_List.Controllers
                 }
             }
 
-            var result = tasks.ToList();
+            // Sắp xếp
             if (!string.IsNullOrEmpty(sort))
             {
                 sort = sort.Trim().ToLower();
                 switch (sort)
                 {
                     case "asc":
-                        result = result.OrderBy(t => t.DueDate).ToList();
+                        tasks = tasks.OrderBy(t => t.DueDate);
                         break;
                     case "desc":
-                        result = result.OrderByDescending(t => t.DueDate).ToList();
+                        tasks = tasks.OrderByDescending(t => t.DueDate);
+                        break;
+                    default:
+                        tasks = tasks.OrderByDescending(t => t.Id);
                         break;
                 }
             }
-            return View("TodoList", result); // Trả về view TodoList với danh sách task đã lọc
+            // Áp dụng phân trang
+            var pagedResult = tasks.ToPagedList(pageNumber, pageSize);
+            // Giữ lại giá trị lọc để hiển thị lại trong View
+            ViewBag.Query = query;
+            ViewBag.Status = status;
+            ViewBag.Sort = sort;
+
+            return View("TodoList", pagedResult);
         }
 
 

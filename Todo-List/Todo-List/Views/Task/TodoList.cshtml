@@ -1,87 +1,99 @@
-﻿@model IEnumerable<Todo_List.Models.Task> //IEnumerable<Task> là một danh sách các Task mà bạn có thể duyệt qua bằng foreach.
+﻿@using X.PagedList.Mvc.Core
+@using X.PagedList
+@model IPagedList<Todo_List.Models.Task>
 
 @section Styles {
-        <link rel="stylesheet" href="~/css/todolist.css" />
+    <link rel="stylesheet" href="~/css/todolist.css" />
+    <link rel="stylesheet" href="~/css/pagination.css" />
 }
-    <main>
-        <div class="task-container">
-            <div class="task-header">
-                <div class="task-add">
-                    <h2>Danh sách công việc</h2>
-                    <a asp-controller="Task" asp-action="Add" class="btn">+ Thêm công việc</a>
-                </div>
-                <div class="task-search">
-                    <form asp-controller="Task" asp-action="Search" method="get">
-                        <div class="task-search-input">
-                            <i class='bx bx-search'></i>
-                            <input type="text" name="query" placeholder="Tìm kiếm công việc..." />
+<main>
+    <div class="task-container">
+        <div class="task-header">
+            <div class="task-add">
+                <h2>Danh sách công việc</h2>
+                <a asp-controller="Task" asp-action="Add" class="btn">+ Thêm công việc</a>
+            </div>
+            <div class="task-search">
+                <form asp-controller="Task" asp-action="Search" method="get">
+                    <div class="task-search-input">
+                        <i class='bx bx-search'></i>
+                        <input type="text" name="query" placeholder="Tìm kiếm công việc..." />
+                    </div>
+                    <button type="submit" class="btn">Tìm</button>
+                </form>
+                <div class="task-search-buttons">
+                    <div class="sort-status-wrapper">
+                        <button class="btn dropdown-toggle">
+                            <i class='bx bx-calendar'></i> Sắp xếp theo ngày
+                        </button>
+                        <div class="dropdown-status">
+                            <a asp-controller="Task" asp-action="Search" asp-route-sort="asc">Ngày sớm nhất</a>
+                            <a asp-controller="Task" asp-action="Search" asp-route-sort="desc"> Ngày muộn nhất</a>
                         </div>
-                        <button type="submit" class="btn">Tìm</button>
-                    </form>
-                    <div class="task-search-buttons">
-                        <div class="sort-status-wrapper">
-                            <button class="btn dropdown-toggle">
-                                <i class='bx bx-calendar'></i> Sắp xếp theo ngày
-                            </button>
-                            <div class="dropdown-status">
-                                <a asp-controller="Task" asp-action="Search" asp-route-sort="asc">Ngày sớm nhất</a>
-                                <a asp-controller="Task" asp-action="Search" asp-route-sort="desc"> Ngày muộn nhất</a>
-                            </div>
-                        </div>
-                        <div class="sort-status-wrapper">
-                            <button class="btn dropdown-toggle">
-                                <i class='bx bx-task'></i> Sắp xếp theo trạng thái
-                            </button>
-                            <div class="dropdown-status">
-                                <a asp-controller="Task" asp-action="Search" asp-route-status="in-progress">Đang thực hiện</a>
-                                <a asp-controller="Task" asp-action="Search" asp-route-status="done">Hoàn thành</a>
-                                <a asp-controller="Task" asp-action="Search" asp-route-status="pending">Chưa thực hiện</a>
-                            </div>
+                    </div>
+                    <div class="sort-status-wrapper">
+                        <button class="btn dropdown-toggle">
+                            <i class='bx bx-task'></i> Sắp xếp theo trạng thái
+                        </button>
+                        <div class="dropdown-status">
+                            <a asp-controller="Task" asp-action="Search" asp-route-status="in-progress">Đang thực hiện</a>
+                            <a asp-controller="Task" asp-action="Search" asp-route-status="done">Hoàn thành</a>
+                            <a asp-controller="Task" asp-action="Search" asp-route-status="pending">Chưa thực hiện</a>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="task-list">
-                @if (!Model.Any())
+        <div class="task-list">
+            @if (!Model.Any())
+            {
+                <p class="no-task">Bạn chưa có công việc nào.</p>
+            }
+            else
+            {
+                @foreach (var task in Model)
                 {
-                    <p class="no-task">Bạn chưa có công việc nào.</p>
-                }
-                else
-                {
-                    @foreach (var task in Model)
+                    var (statusClass, statusValue) = task.Status?.Trim().ToLower() switch
                     {
-                        var (statusClass, statusValue) = task.Status?.Trim().ToLower() switch
-                        {
-                            "in progress" => ("progress", "Đang thực hiện"),
-                            "done" => ("done", "Hoàn thành"),
-                            "pending" => ("pending", "Chưa thực hiện"),
-                        };
+                        "in progress" => ("progress", "Đang thực hiện"),
+                        "done" => ("done", "Hoàn thành"),
+                        "pending" => ("pending", "Chưa thực hiện"),
+                    };
 
-                        <div class="task-box">
-                            <div class="task-box-title">
-                                <span>#@task.Id: @task.Title</span>
-                                <i class='bx bx-dots-vertical-rounded dropdown-toggle'></i>
-                                <div class="dropdown">
-                                    <a asp-action="Edit" asp-route-id="@task.Id">Chỉnh sửa</a>
-                                    <a asp-action="Detail" asp-route-id="@task.Id">Chi tiết</a>
-                                    <a asp-action="Delete" asp-route-id="@task.Id" onclick="return confirm('Bạn có chắc muốn xóa công việc này không?');">Xóa</a>
-                                </div>
-                            </div>
-                            <div class="task-info">
-                                <div class="task-status @statusClass">@statusValue</div>
-                                <div class="task-date">@task.DueDate?.ToString("yyyy-MM-dd")</div>
-                            </div>
-                            <div class="task-desc">
-                                @(task.Description?.Length > 36 ? task.Description.Substring(0, 36) + "..." : task.Description)
+                    <div class="task-box">
+                        <div class="task-box-title">
+                            <span>#@task.Id: @task.Title</span>
+                            <i class='bx bx-dots-vertical-rounded dropdown-toggle'></i>
+                            <div class="dropdown">
+                                <a asp-action="Edit" asp-route-id="@task.Id">Chỉnh sửa</a>
+                                <a asp-action="Detail" asp-route-id="@task.Id">Chi tiết</a>
+                                <a asp-action="Delete" asp-route-id="@task.Id" onclick="return confirm('Bạn có chắc muốn xóa công việc này không?');">Xóa</a>
                             </div>
                         </div>
-                    }
+                        <div class="task-info">
+                            <div class="task-status @statusClass">@statusValue</div>
+                            <div class="task-date">@task.DueDate?.ToString("yyyy-MM-dd")</div>
+                        </div>
+                        <div class="task-desc">
+                            @(task.Description?.Length > 36 ? task.Description.Substring(0, 36) + "..." : task.Description)
+                        </div>
+                    </div>
                 }
-            </div>
+            }
         </div>
-    </main>
+        <div class="pagination-container">
+            @Html.PagedListPager(Model, page => Url.Action("TodoList", new { pageNumber = page }),
+            new PagedListRenderOptions
+            {
+                UlElementClasses = new[] { "pagination" },
+                LiElementClasses = new[] { "page-item" },
+                PageClasses = new[] { "page-link" }
+            })
+        </div>
+    </div>
+</main>
 
 @section Scripts {
-        <script src="~/js/todolist.js"></script>
+    <script src="~/js/todolist.js"></script>
 }
