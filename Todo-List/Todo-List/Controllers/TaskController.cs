@@ -19,14 +19,14 @@ namespace Todo_List.Controllers
         public IActionResult Login(LoginModel user)
         {
             // Tìm người dùng trong database theo Username
-            var existingUser = db.Users.FirstOrDefault(u => u.Username == user.Username); 
+            var existingUser = db.Users.FirstOrDefault(u => u.Username == user.Username);
             if (existingUser == null) // Nếu không tồn tại username
             {
                 ModelState.AddModelError("Username", "Tài khoản không tồn tại.");
                 return View(user);
             }
             // Kiểm tra mật khẩu bằng cách so sánh mật khẩu người dùng nhập với mật khẩu mã hóa trong DB
-            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(user.Password, existingUser.Password);  
+            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(user.Password, existingUser.Password);
             if (!isPasswordValid) // Nếu mật khẩu sai
             {
                 ModelState.AddModelError("Password", "Mật khẩu không chính xác.");
@@ -36,7 +36,7 @@ namespace Todo_List.Controllers
             HttpContext.Session.SetInt32("UserId", existingUser.Id);
             HttpContext.Session.SetString("Username", existingUser.Username);
             HttpContext.Session.SetString("Email", existingUser.Email);
-
+            HttpContext.Session.SetString("Avatar", existingUser.Avatar ?? string.Empty);
             return RedirectToAction("TodoList");
         }
 
@@ -56,10 +56,7 @@ namespace Todo_List.Controllers
         [HttpPost("register")]
         public IActionResult Register(RegisterModel user)
         {
-            if (!ModelState.IsValid) // Kiểm tra hợp lệ dữ liệu (như [Required], [Email], [MinLength], ...)
-            {
-                return View(user);
-            }
+            if (!ModelState.IsValid) return View(user);// Kiểm tra hợp lệ dữ liệu (như [Required], [Email], [MinLength], ...)
             if (db.Users.Any(u => u.Username == user.Username)) // Kiểm tra trùng username
             {
                 ModelState.AddModelError("Username", "Tên đăng nhập đã tồn tại.");
@@ -90,10 +87,7 @@ namespace Todo_List.Controllers
         {
             // Lấy ID người dùng hiện tại từ session
             int? userId = HttpContext.Session.GetInt32("UserId");
-            if (userId == null)
-            {
-                return RedirectToAction("Login");
-            }
+            if (userId == null) return RedirectToAction("Login");
             // Lấy danh sách task của user từ DB
             var tasks = db.Tasks
                 .Where(t => t.UserId == userId)
@@ -108,10 +102,7 @@ namespace Todo_List.Controllers
         public IActionResult Search(string query, string status, string sort)
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
-            if (userId == null)
-            {
-                return RedirectToAction("Login");
-            }
+            if (userId == null) return RedirectToAction("Login");
             // Lấy tất cả task của user
             var tasks = db.Tasks.Where(t => t.UserId == userId);
             // Lọc theo từ khóa
@@ -138,15 +129,22 @@ namespace Todo_List.Controllers
             }
 
             var result = tasks.ToList();
+            if (!string.IsNullOrEmpty(sort))
+            {
+                sort = sort.Trim().ToLower();
+                switch (sort)
+                {
+                    case "asc":
+                        result = result.OrderBy(t => t.DueDate).ToList();
+                        break;
+                    case "desc":
+                        result = result.OrderByDescending(t => t.DueDate).ToList();
+                        break;
+                }
+            }
             return View("TodoList", result); // Trả về view TodoList với danh sách task đã lọc
         }
 
-        [AuthenticationFilter]
-        [HttpGet("calender")]
-        public IActionResult Calender()
-        {
-            return View();
-        }
 
         [AuthenticationFilter]
         [HttpGet("add")]
@@ -160,17 +158,9 @@ namespace Todo_List.Controllers
         public IActionResult Add(Todo_List.Models.Task task)
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
-            if (userId == null)
-            {
-                return RedirectToAction("Login");
-            }
-
-            task.UserId = userId.Value;
-
-            if (!ModelState.IsValid)
-            {
-                return View(task);
-            }
+            if (userId == null) return RedirectToAction("Login");
+            task.UserId = userId.Value; 
+            if (!ModelState.IsValid) return View(task);
 
             task.Status = "Pending";
             task.CreatedAt = DateTime.Now;
@@ -182,21 +172,14 @@ namespace Todo_List.Controllers
             return RedirectToAction("TodoList");
         }
 
-
         [AuthenticationFilter]
         [HttpGet("edit/{id}")]
         public IActionResult Edit(int id)
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
-            if (userId == null)
-            {
-                return RedirectToAction("Login");
-            }
+            if (userId == null) return RedirectToAction("Login");
             var task = db.Tasks.FirstOrDefault(t => t.Id == id && t.UserId == userId.Value);
-            if (task == null)
-            {
-                return NotFound("Công việc không tồn tại hoặc bạn không có quyền xem.");
-            }
+            if (task == null) return NotFound("Công việc không tồn tại hoặc bạn không có quyền xem.");
 
             return View(task);
         }
@@ -206,19 +189,10 @@ namespace Todo_List.Controllers
         public IActionResult Edit(int id, Todo_List.Models.Task updatedTask)
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
-            if (userId == null)
-            {
-                return RedirectToAction("Login");
-            }
+            if (userId == null) return RedirectToAction("Login");
             var task = db.Tasks.FirstOrDefault(t => t.Id == id && t.UserId == userId.Value);
-            if (task == null)
-            {
-                return NotFound("Công việc không tồn tại hoặc bạn không có quyền xem.");
-            }
-            if (!ModelState.IsValid)
-            {
-                return View(updatedTask);
-            }
+            if (task == null) return NotFound("Công việc không tồn tại hoặc bạn không có quyền xem.");
+            if (!ModelState.IsValid) return View(updatedTask);
 
             task.Title = updatedTask.Title;
             task.Description = updatedTask.Description;
@@ -235,17 +209,11 @@ namespace Todo_List.Controllers
         public IActionResult Detail(int id)
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
-            if (userId == null)
-            {
-                return RedirectToAction("Login");
-            }
+            if (userId == null) return RedirectToAction("Login");
             // Lấy task theo id và thuộc về user hiện tại
             var task = db.Tasks.FirstOrDefault(t => t.Id == id && t.UserId == userId.Value);
-            if (task == null)
-            {
-                return NotFound("Công việc không tồn tại hoặc bạn không có quyền xem.");
-            }
-            return View(task); 
+            if (task == null) return NotFound("Công việc không tồn tại hoặc bạn không có quyền xem.");
+            return View(task);
         }
 
         [AuthenticationFilter]
@@ -253,15 +221,10 @@ namespace Todo_List.Controllers
         public IActionResult Delete(int id)
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
-            if (userId == null)
-            {
-                return RedirectToAction("Login");
-            }
+            if (userId == null) return RedirectToAction("Login");
             var task = db.Tasks.FirstOrDefault(t => t.Id == id && t.UserId == userId.Value);
-            if (task == null)
-            {
-                return NotFound("Công việc không tồn tại hoặc bạn không có quyền xóa.");
-            }
+            if (task == null) return NotFound("Công việc không tồn tại hoặc bạn không có quyền xóa.");
+
             db.Tasks.Remove(task);
             db.SaveChanges();
 
@@ -272,7 +235,107 @@ namespace Todo_List.Controllers
         [HttpGet("profile")]
         public IActionResult Profile()
         {
-            return View();
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null) return RedirectToAction("Login");
+            var user = db.Users.FirstOrDefault(u => u.Id == userId.Value);
+            if (user == null) return RedirectToAction("Login");
+
+            return View(BuildProfileModel(user));
+        }
+
+        [AuthenticationFilter]
+        [HttpPost("profile")]
+        public IActionResult Profile(UpdateProfileModel updatedUser, IFormFile? avatarFile)
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null) return RedirectToAction("Login");
+            var user = db.Users.FirstOrDefault(u => u.Id == userId.Value);
+            if (user == null) return RedirectToAction("Login");
+
+            // Kiểm tra validate
+            if (!ModelState.IsValid)
+            {
+                updatedUser.Avatar = user.Avatar;
+                ViewBag.ActiveTab = "account";
+                return View(BuildProfileModel(user, updatedUser));
+            }
+            // Cập nhật thông tin user
+            user.Fullname = updatedUser.Fullname;
+            user.Email = updatedUser.Email;
+            user.Phone = updatedUser.Phone;
+            user.Address = updatedUser.Address;
+            user.UpdatedAt = DateTime.Now;
+
+            // Xử lý avatar nếu có upload
+            if (avatarFile != null && avatarFile.Length > 0)
+            {
+                // Nếu user đã có avatar cũ, xóa file cũ để tránh rác file
+                if (!string.IsNullOrEmpty(user.Avatar))
+                {
+                    var oldAvatar = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", user.Avatar.TrimStart('/')); // Tạo đường dẫn tuyệt đối tới file avatar cũ
+                    if (System.IO.File.Exists(oldAvatar)) // Kiểm tra file có tồn tại hay không, nếu có thì xóa
+                        System.IO.File.Delete(oldAvatar);
+                }
+                // Tạo tên file mới duy nhất bằng GUID + giữ nguyên phần mở rộng của file gốc
+                var fileName = Guid.NewGuid() + Path.GetExtension(avatarFile.FileName);
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads", fileName);
+                // Lưu file mới lên server
+                using var stream = new FileStream(filePath, FileMode.Create);
+                avatarFile.CopyTo(stream);
+                // Cập nhật đường dẫn avatar mới vào database (đường dẫn dùng cho view là tương đối từ wwwroot)
+                user.Avatar = "/uploads/" + fileName;
+                HttpContext.Session.SetString("Avatar", user.Avatar);
+            }
+            db.SaveChanges();
+            HttpContext.Session.SetString("Email", user.Email);
+            // Sau khi cập nhật thành công, trả về view chính với thông báo và dữ liệu mới
+            ViewBag.ActiveTab = "account";
+            ViewBag.Message = "Cập nhật thành công!";
+            return View(BuildProfileModel(user));
+        }
+
+        [AuthenticationFilter]
+        [HttpPost("change-password")]
+        public IActionResult ChangePassword(ChangePasswordModel model)
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null) return RedirectToAction("Login");
+            var user = db.Users.FirstOrDefault(u => u.Id == userId.Value);
+            if (user == null) return RedirectToAction("Login");
+
+            // Nếu validation lỗi
+            if (!ModelState.IsValid)
+            {
+                ViewBag.ActiveTab = "password"; 
+                return View("Profile", BuildProfileModel(user, null, model));
+            }
+            // Cập nhật mật khẩu
+            user.Password = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
+            user.UpdatedAt = DateTime.Now;
+            db.SaveChanges();
+
+            ViewBag.Message = "Đổi mật khẩu thành công!";
+            ViewBag.ActiveTab = "password";
+            return View("Profile", BuildProfileModel(user));
+        }
+
+        //Factory Method/Helper Method tạo và khởi tạo một Parent ViewModel từ các dữ liệu khác nhau
+        private ProfileModel BuildProfileModel(User user, UpdateProfileModel? updateProfile = null, ChangePasswordModel? changePassword = null)
+        {
+            return new ProfileModel
+            {
+                UpdateProfile = updateProfile ?? new UpdateProfileModel
+                {
+                    Id = user.Id,
+                    Username = user.Username,
+                    Fullname = user.Fullname,
+                    Email = user.Email,
+                    Phone = user.Phone,
+                    Address = user.Address,
+                    Avatar = user.Avatar
+                },
+                ChangePassword = changePassword ?? new ChangePasswordModel()
+            };
         }
     }
 }

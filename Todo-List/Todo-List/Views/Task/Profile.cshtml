@@ -1,90 +1,39 @@
-﻿@section Styles {
+﻿@model Todo_List.Models.ProfileModel
+
+@section Styles {
     <link rel="stylesheet" href="~/css/profile.css" />
+}
+@if (ViewBag.Message != null)
+{
+    <div id="alertMessage" class="alert">
+        @ViewBag.Message
+    </div>
 }
 <div class="container">
     <aside class="sidebar">
         <div class="profile">
-            <img id="avatar"
-                 src="https://www.shutterstock.com/image-vector/user-circle-isolated-icon-round-600nw-2459622791.jpg"
-                 alt="Avatar">
-            <h3>Vũ Doãn Dũng</h3>
+            <img id="avatar" src="@(string.IsNullOrEmpty(Model.UpdateProfile.Avatar) ? Url.Content("~/uploads/user-default.webp") : Model.UpdateProfile.Avatar)" alt="Avatar">
+            <h3>@Model.UpdateProfile.Fullname</h3>
         </div>
         <ul class="menu">
-            <li><a href="#" class="active" data-target="account"><i class="fa-solid fa-user"></i> Tài khoản</a></li>
-            <li><a href="#" data-target="password"><i class="fa-solid fa-lock"></i> Mật khẩu</a></li>
+            <li><a href="#" class="@(ViewBag.ActiveTab == "account" || ViewBag.ActiveTab == null ? "active" : "")" data-target="account"><i class="fa-solid fa-user"></i> Tài khoản</a></li>
+            <li><a href="#" class="@(ViewBag.ActiveTab == "password" ? "active" : "")" data-target="password"><i class="fa-solid fa-lock"></i> Mật khẩu</a></li>
             <li><a asp-controller="Task" asp-action="Logout"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</a></li>
         </ul>
     </aside>
 
     <main class="content">
-        <div id="account" class="form-section active">
-            <h2>Cài đặt Tài khoản</h2>
-            <form>
-                <input type="file" id="avatarInput" accept="image/*" style="display: none;">
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="fullname">Họ và tên</label>
-                        <input type="text" id="fullname" value="Vũ Doãn Dũng">
-                    </div>
-                    <div class="form-group">
-                        <label for="username">Tên đăng nhập</label>
-                        <input type="text" id="username" value="username1">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="date">Ngày sinh</label>
-                        <input type="date" id="date" value="vudungit92@gmail.com">
-                    </div>
-                    <div class="form-group">
-                        <label for="address">Địa chỉ</label>
-                        <input type="text" id="address" value="+91 9876543215">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" value="vudungit92@gmail.com">
-                    </div>
-                    <div class="form-group">
-                        <label for="phone">Số điện thoại</label>
-                        <input type="text" id="phone" value="+91 9876543215">
-                    </div>
-                </div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-update">Cập nhật</button>
-                    <a type="reset" class="btn btn-cancel">Hủy</a>
-                </div>
-            </form>
+        <div id="account" class="form-section @(ViewBag.ActiveTab == "account" || ViewBag.ActiveTab == null ? "active" : "")">
+            @await Html.PartialAsync("_UpdateProfile", Model.UpdateProfile)
         </div>
 
-        <!-- Password Settings -->
-        <div id="password" class="form-section">
-            <h2>Cài đặt Mật khẩu</h2>
-            <form>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="newPassword">Mật khẩu mới</label>
-                        <input type="password" id="newPassword">
-                    </div>
-                    <div class="form-group">
-                        <label for="confirmPassword">Xác nhận mật khẩu mới</label>
-                        <input type="password" id="confirmPassword">
-                    </div>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-update">Đổi mật khẩu</button>
-                    <a type="reset" class="btn btn-cancel">Hủy</a>
-                </div>
-            </form>
+        <div id="password" class="form-section @(ViewBag.ActiveTab == "password" ? "active" : "")">
+            @await Html.PartialAsync("_ChangePassword", Model.ChangePassword)
         </div>
     </main>
 </div>
 
 @section Scripts {
     <script src="~/js/profile.js"></script>
+    <script src="~/js/notification.js"></script>
 }

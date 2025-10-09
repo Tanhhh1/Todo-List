@@ -1,4 +1,13 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    var username = HttpContextAccessor.HttpContext.Session.GetString("Username");
+    var avatar = HttpContextAccessor.HttpContext.Session.GetString("Avatar");
+    var defaultAvatar = Url.Content("~/uploads/user-default.webp");
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -11,14 +20,14 @@
 <body>
     <header>
         <div class="header-container">
-            <div class="logo">MyTasks</div>
+            <a asp-controller="Task" asp-action="TodoList" class="logo">MyTasks</a>
 
-            <div class="user-info">
-                <span>John Doe</span>
+            <a asp-controller="Task" asp-action="Profile" class="user-info">
+                <span>@username</span>
                 <div class="avatar">
-                    <img src="https://www.shutterstock.com/image-vector/user-circle-isolated-icon-round-600nw-2459622791.jpg" alt="User Avatar">
+                    <img src="@(string.IsNullOrEmpty(avatar) ? defaultAvatar : avatar)" alt="User Avatar">
                 </div>
-            </div>
+            </a>
         </div>
     </header>
 

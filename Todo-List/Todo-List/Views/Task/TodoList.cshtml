@@ -19,7 +19,15 @@
                         <button type="submit" class="btn">Tìm</button>
                     </form>
                     <div class="task-search-buttons">
-                        <a asp-controller="Task" asp-action="Calender" class="btn"><i class='bx bx-calendar'></i> Lịch</a>
+                        <div class="sort-status-wrapper">
+                            <button class="btn dropdown-toggle">
+                                <i class='bx bx-calendar'></i> Sắp xếp theo ngày
+                            </button>
+                            <div class="dropdown-status">
+                                <a asp-controller="Task" asp-action="Search" asp-route-sort="asc">Ngày sớm nhất</a>
+                                <a asp-controller="Task" asp-action="Search" asp-route-sort="desc"> Ngày muộn nhất</a>
+                            </div>
+                        </div>
                         <div class="sort-status-wrapper">
                             <button class="btn dropdown-toggle">
                                 <i class='bx bx-task'></i> Sắp xếp theo trạng thái
@@ -48,7 +56,6 @@
                             "in progress" => ("progress", "Đang thực hiện"),
                             "done" => ("done", "Hoàn thành"),
                             "pending" => ("pending", "Chưa thực hiện"),
-                            _ => (" ", "Không xác định")
                         };
 
                         <div class="task-box">

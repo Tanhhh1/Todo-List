@@ -121,6 +121,7 @@
 .btn-cancel {
     background-color: #ccc;
     transition: all 0.3s ease;
+    text-decoration: none;
 }
 
 .btn-update:hover {
@@ -139,6 +140,12 @@
         display: block;
     }
 
+.text-danger {
+    display: block;
+    margin-top: 12px;
+    font-size: 13px;
+    color: #e74c3c;
+}
 /* Responsive */
 @media (max-width: 745px) {
     .container {
@@ -223,4 +230,13 @@
     .content h2 {
         font-size: 18px;
     }
+}
+
+.alert {
+    color: #fff;
+    background-color: #3bba4b;
+    padding: 10px 15px;
+    max-width: 1300px;
+    margin: auto;
+    margin-top: 20px;
 }
