@@ -13,7 +13,6 @@ CREATE TABLE Users (
     Email NVARCHAR(100) NOT NULL UNIQUE,
     Password NVARCHAR(255) NOT NULL,
     Address NVARCHAR(255),
-    Birthday DATETIME,
     Phone NVARCHAR(20),
 	Avatar NVARCHAR(255),
     CreatedAt DATETIME DEFAULT GETDATE(),

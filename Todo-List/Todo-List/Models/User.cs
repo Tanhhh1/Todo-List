@@ -17,8 +17,6 @@ public partial class User
 
     public string? Address { get; set; }
 
-    public DateTime? Birthday { get; set; }
-
     public string? Phone { get; set; }
 
     public DateTime? CreatedAt { get; set; }
