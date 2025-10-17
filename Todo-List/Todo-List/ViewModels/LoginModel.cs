@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Todo_List.Models
+namespace Todo_List.ViewModels
 {
     public class LoginModel
     {

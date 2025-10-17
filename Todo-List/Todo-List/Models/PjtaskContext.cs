@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Todo_List.Models;
 
-public partial class TodoListContext : DbContext
+public partial class PjtaskContext : DbContext
 {
-    public TodoListContext()
+    public PjtaskContext()
     {
     }
 
-    public TodoListContext(DbContextOptions<TodoListContext> options)
+    public PjtaskContext(DbContextOptions<PjtaskContext> options)
         : base(options)
     {
     }
@@ -21,13 +21,13 @@ public partial class TodoListContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=DESKTOP-D1TJ1DB\\SQLEXPRESS;Initial Catalog=TodoList;User ID=sa;Password=Aptech@2024;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False");
+        => optionsBuilder.UseSqlServer("Data Source=DESKTOP-D1TJ1DB\\SQLEXPRESS;Initial Catalog=PJTask;User ID=sa;Password=Aptech@2024;Trust Server Certificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Task>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Tasks__3214EC07B07E8281");
+            entity.HasKey(e => e.Id).HasName("PK__Tasks__3214EC07870C6551");
 
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
@@ -43,19 +43,19 @@ public partial class TodoListContext : DbContext
 
             entity.HasOne(d => d.User).WithMany(p => p.Tasks)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__Tasks__UserId__5812160E");
+                .HasConstraintName("FK_Tasks_Users");
         });
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__User__3214EC07040F8877");
+            entity.HasKey(e => e.Id).HasName("PK__Users__3214EC079DB13BED");
 
-            entity.HasIndex(e => e.Username, "UQ__User__536C85E440F6FACE").IsUnique();
+            entity.HasIndex(e => e.Username, "UQ__Users__536C85E457AFBE80").IsUnique();
 
-            entity.HasIndex(e => e.Email, "UQ__User__A9D10534A5CC2476").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__Users__A9D10534D8CCFA00").IsUnique();
 
             entity.Property(e => e.Address).HasMaxLength(255);
-            entity.Property(e => e.Avatar).HasMaxLength(250);
+            entity.Property(e => e.Avatar).HasMaxLength(255);
             entity.Property(e => e.Birthday).HasColumnType("datetime");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")

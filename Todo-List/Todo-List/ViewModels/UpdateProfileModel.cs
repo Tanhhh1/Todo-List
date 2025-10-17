@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
 
-namespace Todo_List.Models
+namespace Todo_List.ViewModels
 {
     public class UpdateProfileModel
     {

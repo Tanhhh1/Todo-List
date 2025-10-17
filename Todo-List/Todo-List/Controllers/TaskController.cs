@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Todo_List.Filters;
 using Todo_List.Models;
+using Todo_List.ViewModels;
 using X.PagedList.Extensions;
 
 namespace Todo_List.Controllers
@@ -8,7 +9,7 @@ namespace Todo_List.Controllers
     [Route("task")]
     public class TaskController : Controller
     {
-        private readonly TodoListContext db = new TodoListContext();
+        private readonly PjtaskContext db = new PjtaskContext();
 
         [HttpGet("login")]
         public IActionResult Login()

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Todo_List.Models
+namespace Todo_List.ViewModels
 {
     public class ProfileModel
     {
