@@ -5,8 +5,11 @@
 }
 @if (ViewBag.Message != null)
 {
-    <div id="alertMessage" class="alert">
-        @ViewBag.Message
+    <div id="alertOverlay">
+        <div id="alertBox">
+            <div class="checkmark">&#10003;</div>
+            <div class="alert-text">@ViewBag.Message</div>
+        </div>
     </div>
 }
 <div class="container">
